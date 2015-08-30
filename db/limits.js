@@ -37,7 +37,9 @@ exports.get = function (key, done) {
  */
 exports.set = function (key, limit, timeType, expire, done) {
 	limits[key] = { limit: JSON.parse(limit), timeType: timeType, expire: expire }
-	console.log(limits[key])
+	if (exports.config.debug == true) {
+		console.log(limits[key])
+	}
 	return done(null)
 }
 
@@ -69,7 +71,9 @@ exports.removeExpired = function (done) {
 		}
 	}
 	for (var i = 0; i < limitsToDelete.length; ++i) {
-		console.log("Deleting limit:" + key)
+		if (exports.config.debug == true) {
+			console.log("Deleting limit:" + key)
+		}
 		delete limits[limitsToDelete[i]]
 	}
 	return done(null)
@@ -94,10 +98,12 @@ exports.removeAll = function (done) {
  * timeToCheckExpiredLimits - The time in seconds to check expired limits
  */
 var min = 60000, // 1 minute in milliseconds
-    hour = 3600000; // 1 hour in milliseconds 
+    hour = 3600000; // 1 hour in milliseconds
+
 exports.config = {
 	lookup: ['user.id'], //  must be generated req.user object before. Or try 'connection.remoteAddress'
 	total: 150,
 	expire: 10 * min, 
-	timeToRemoveExpiredLimits: 24 * hour
+	debug: false,
+	timeToCheckExpiredLimits: 24 * hour
 } 
